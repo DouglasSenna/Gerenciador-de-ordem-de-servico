@@ -90,10 +90,6 @@
       color: green;
       margin-top: 20px;
     }
-
-    #reinstallContainer {
-      margin-top: 10px;
-    }
   </style>
 </head>
 <body>
@@ -117,6 +113,9 @@
     <label for="plate">Placa:</label>
     <input type="text" id="plate" required><br>
 
+    <label for="model">Modelo do Veículo:</label>
+    <input type="text" id="model" placeholder="Ex: Fusca, Civic, Corolla" required><br>
+
     <label for="serviceType">Tipo de Serviço:</label>
     <select id="serviceType">
       <option value="Instalação">Instalação</option>
@@ -125,14 +124,18 @@
       <option value="Retirada">Retirada</option>
     </select><br>
 
+    <label for="lockType">Tipo de Bloqueio:</label>
+    <select id="lockType">
+      <option value="Injeção">Injeção</option>
+      <option value="Ignição">Ignição</option>
+      <option value="Nenhum">Nenhum</option>
+    </select><br>
+
     <label for="observation">Observação:</label>
     <textarea id="observation" required></textarea><br>
 
     <label for="serviceDate">Data do Serviço:</label>
     <input type="date" id="serviceDate" required><br>
-
-    <label for="modificationDate">Data de Modificação:</label>
-    <input type="date" id="modificationDate" required readonly><br>
 
     <button type="submit">Salvar Ordem de Serviço</button>
   </form>
@@ -143,50 +146,52 @@
 
   <script>
     function saveOrder() {
-      const osNumber = document.getElementById("osNumber").value;
-      const plate = document.getElementById("plate").value;
-      const serviceType = document.getElementById("serviceType").value;
-      const observation = document.getElementById("observation").value;
-      const serviceDate = document.getElementById("serviceDate").value;
+      try {
+        console.log("Iniciando a função saveOrder()");
 
-      const currentDate = new Date().toISOString().split('T')[0];
-      document.getElementById("modificationDate").value = currentDate; // Define a data de modificação
+        const osNumber = document.getElementById("osNumber").value;
+        const plate = document.getElementById("plate").value;
+        const model = document.getElementById("model").value;
+        const serviceType = document.getElementById("serviceType").value;
+        const lockType = document.getElementById("lockType").value;
+        const observation = document.getElementById("observation").value;
+        const serviceDate = document.getElementById("serviceDate").value;
 
-      const modificationDate = document.getElementById("modificationDate").value;
+        console.log("Valores capturados do formulário:", {
+          osNumber, plate, model, serviceType, lockType, observation, serviceDate
+        });
 
-      let commission = 0; // Valor padrão da comissão
+        const order = {
+          osNumber,
+          plate,
+          model,
+          serviceType,
+          lockType,
+          observation,
+          serviceDate
+        };
 
-      // Define a comissão de acordo com o tipo de serviço
-      if (serviceType === "Instalação") {
-        commission = 20;
-      } else if (serviceType === "Manutenção" || serviceType === "Manutenção/Reinstalação") {
-        commission = 25;
+        console.log("Objeto order criado:", order);
+
+        const orders = JSON.parse(localStorage.getItem("orders")) || [];
+        console.log("Ordens de serviço existentes no localStorage:", orders);
+
+        orders.push(order);
+
+        console.log("Array atualizado de ordens de serviço:", orders);
+
+        localStorage.setItem("orders", JSON.stringify(orders));
+        console.log("Ordens de serviço salvas no localStorage com sucesso.");
+
+        document.getElementById("confirmationMessage").style.display = "block";
+        alert("Ordem de Serviço salva com sucesso!");
+
+        document.querySelector('form').reset();
+        console.log("Formulário limpo e pronto para novo cadastro.");
+
+      } catch (error) {
+        console.error("Erro ao salvar a Ordem de Serviço:", error);
       }
-
-      const order = {
-        osNumber,
-        plate,
-        serviceType,
-        observation,
-        serviceDate,
-        modificationDate,
-        commission
-      };
-
-      const orders = JSON.parse(localStorage.getItem("orders")) || [];
-
-      orders.push(order);
-
-      localStorage.setItem("orders", JSON.stringify(orders));
-
-      document.getElementById("confirmationMessage").style.display = "block";
-
-      document.querySelector('form').reset();
-
-      console.log("Ordem de Serviço cadastrada:");
-      console.log(order);
-      console.log("Todos os cadastros no LocalStorage:");
-      console.log(orders);
     }
   </script>
 
