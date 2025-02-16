@@ -9,7 +9,7 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20;
-      padding: 200;
+      padding: 20;
       background-color: #f4f4f4;
     }
 
@@ -24,8 +24,7 @@
       background-color: #333;
       overflow: hidden;
       padding: 10px;
-      display:flex;
-      flex-direction;
+      display: flex;
       justify-content: space-around;
     }
 
@@ -33,7 +32,7 @@
       color: white;
       padding: 14px 10px;
       text-decoration: none;
-      display:inline-block;
+      display: inline-block;
     }
 
     nav a:hover {
@@ -80,6 +79,10 @@
 
     th {
       background-color: #f2f2f2;
+    }
+
+    tr {
+      cursor: pointer;
     }
 
     #report {
@@ -172,11 +175,15 @@
       const filteredOrders = orders.filter(order => {
         const orderYear = new Date(order.serviceDate).getFullYear();
         const orderMonth = new Date(order.serviceDate).getMonth() + 1;
-        return orderYear === parseInt(year) && orderMonth === parseInt(month);
+
+        if (orderYear === parseInt(year) && orderMonth === parseInt(month)) {
+          return true;
+        }
+        return false;
       });
 
       if (filteredOrders.length === 0) {
-        document.getElementById("report").innerHTML = "<p>Nenhuma ordem de serviço encontrada para este ano e mês.</p>";
+        document.getElementById("report").innerHTML = "<p>Nenhuma ordem de serviço encontrada para este ano, mês.</p>";
         return;
       }
 
@@ -194,15 +201,34 @@
       `;
 
       let totalCommission = 0;
+      const serviceCounts = {
+        "Instalação": 0,
+        "Manutenção": 0,
+        "Manutenção/Reinstalação": 0
+      };
+
       filteredOrders.forEach(order => {
         let commission = 0;
-        if (order.serviceType === "Instalação" || order.serviceType === "Manutenção") {
-          commission = 20;
+        switch (order.serviceType) {
+          case "Instalação":
+            commission = 20;
+            serviceCounts["Instalação"]++;
+            break;
+          case "Manutenção":
+            commission = 0;
+            serviceCounts["Manutenção"]++;
+            break;
+          case "Manutenção/Reinstalação":
+            commission = 20;
+            serviceCounts["Manutenção/Reinstalação"]++;
+            break;
+          default:
+            commission = 0;
         }
         totalCommission += commission;
 
         reportHtml += `
-          <tr>
+          <tr onclick="showObservation('${order.observation}')">
             <td>${order.osNumber}</td>
             <td>${new Date(order.serviceDate).toLocaleDateString('pt-BR')}</td>
             <td>${order.serviceType}</td>
@@ -212,12 +238,17 @@
       });
 
       reportHtml += `
-          </tbody>
-        </table>
-        <p><strong>Total de Comissão (R$):</strong> R$ ${totalCommission}</p>
+        </tbody>
+      </table>
+      <p><strong>Total de Comissão (R$):</strong> R$ ${totalCommission}</p>
+      <p><strong>Instalação:</strong> ${serviceCounts["Instalação"]} | <strong>Manutenção:</strong> ${serviceCounts["Manutenção"]} | <strong>Manutenção/Reinstalação:</strong> ${serviceCounts["Manutenção/Reinstalação"]}</p>
       `;
 
       document.getElementById("report").innerHTML = reportHtml;
+    }
+
+    function showObservation(observation) {
+      alert("Observação do Serviço: " + observation);
     }
 
     function saveAsPDF() {
@@ -227,35 +258,55 @@
       const filteredOrders = orders.filter(order => {
         const orderYear = new Date(order.serviceDate).getFullYear();
         const orderMonth = new Date(order.serviceDate).getMonth() + 1;
-        return orderYear === parseInt(year) && orderMonth === parseInt(month);
+
+        if (orderYear === parseInt(year) && orderMonth === parseInt(month)) {
+          return true;
+        }
+        return false;
       });
 
       if (filteredOrders.length === 0) {
-        alert("Nenhuma ordem de serviço encontrada para este ano e mês.");
+        alert("Nenhuma ordem de serviço encontrada para este ano, mês.");
         return;
       }
 
       let totalCommission = 0;
+      const serviceCounts = {
+        "Instalação": 0,
+        "Manutenção": 0,
+        "Manutenção/Reinstalação": 0
+      };
+
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      // Definindo título e formato
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.text(`Relatório Completo de Ordens de Serviço`, 14, 20);
 
-      // Definindo subtítulo
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
       doc.text(`Ano: ${year} | Mês: ${month}`, 14, 30);
 
-      // Adicionando a tabela
       doc.autoTable({
         head: [['O.S', 'Data', 'Tipo de Serviço', 'Comissão (R$)']],
         body: filteredOrders.map(order => {
           let commission = 0;
-          if (order.serviceType === "Instalação" || order.serviceType === "Manutenção") {
-            commission = 20;
+          switch (order.serviceType) {
+            case "Instalação":
+              commission = 20;
+              serviceCounts["Instalação"]++;
+              break;
+            case "Manutenção":
+              commission = 0;
+              serviceCounts["Manutenção"]++;
+              break;
+            case "Manutenção/Reinstalação":
+              commission = 20;
+              serviceCounts["Manutenção/Reinstalação"]++;
+              break;
+            default:
+              commission = 0;
           }
           totalCommission += commission;
           return [order.osNumber, new Date(order.serviceDate).toLocaleDateString('pt-BR'), order.serviceType, commission];
@@ -264,11 +315,10 @@
         theme: 'striped',
       });
 
-      // Adicionando o total de comissão
       doc.setFont("helvetica", "bold");
       doc.text(`Total de Comissão (R$): R$ ${totalCommission}`, 14, doc.lastAutoTable.finalY + 10);
+      doc.text(`Instalação: ${serviceCounts["Instalação"]} | Manutenção: ${serviceCounts["Manutenção"]} | Manutenção/Reinstalação: ${serviceCounts["Manutenção/Reinstalação"]}`, 14, doc.lastAutoTable.finalY + 20);
 
-      // Salvando o PDF
       doc.save(`Relatorio_Completo_${year}_${month}.pdf`);
     }
 
