@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Ordens de Serviço</title>
+  <style>
+    /* Resetando o estilo padrão do navegador */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Estilo geral do corpo da página */
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      background-color: #f7f8fa;
+      color: #333;
+      padding: 0px;
+    }
+
+    /* Cabeçalho */
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 0px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+
+    /* Navegação */
+    nav {
+      margin-top: 0px;
+      text-align: center;
+      background-color: #343a40;
+      border-radius: 0px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-link {
+      display: inline-block;
+      margin: 10px;
+      font-size: 10px;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: 500;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    /* Conteúdo principal */
+    .main-content {
+      background-color: #ffffff;
+      padding: 30px;
+      margin-top: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Seções dentro do conteúdo principal */
+    .info-section {
+      margin-bottom: 30px;
+    }
+
+    .info-section h2 {
+      color: #007bff;
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .info-section label {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .info-section input, .info-section textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .info-section textarea {
+      resize: vertical;
+    }
+
+    /* Botão para cadastrar ordem de serviço */
+    .reset-button {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 14px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .reset-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    /* Rodapé */
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1rem;
+      color: #666;
+    }
+
+    footer p {
+      margin: 10px 0;
+    }
+
+    /* Responsividade para telas menores */
+    @media screen and (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .nav-link {
+        margin: 10px 5px;
+        font-size: 16px;
+        padding: 10px;
+      }
+
+      .reset-button {
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .info-section label {
+        font-size: 1rem;
+      }
+
+      .info-section input, .info-section textarea {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Cadastro de Ordens de Serviço</h1>
+  </header>
+
+  <nav>
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="cadastro.html" class="nav-link">Cadastro</a>
+    <a href="relatorios.html" class="nav-link">Relatórios</a>
+    <a href="pesquisa.html" class="nav-link">Pesquisa</a>
+  </nav>
+
+  <main class="main-content">
+    <section class="info-section">
+      <h2>Preencha os campos abaixo para cadastrar uma nova ordem de serviço:</h2>
+      <form id="orderForm">
+        <label for="osNumber">O.S:</label>
+        <input type="text" id="osNumber" name="osNumber" required>
+
+        <label for="plate">Placa:</label>
+        <input type="text" id="plate" name="plate" required>
+
+        <label for="serviceType">Tipo de Serviço:</label>
+        <input type="text" id="serviceType" name="serviceType" required>
+
+        <label for="observation">Observação:</label>
+        <textarea id="observation" name="observation"></textarea>
+
+        <label for="commission">Comissão:</label>
+        <input type="number" id="commission" name="commission" required>
+
+        <button type="submit" class="reset-button">Cadastrar Ordem de Serviço</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados</p>
+  </footer>
+
+  <script>
+    document.getElementById('orderForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      let orders = JSON.parse(localStorage.getItem('orders')) || [];
+      let newOrder = {
+        osNumber: document.getElementById('osNumber').value,
+        plate: document.getElementById('plate').value,
+        serviceType: document.getElementById('serviceType').value,
+        observation: document.getElementById('observation').value,
+        commission: document.getElementById('commission').value,
+      };
+      orders.push(newOrder);
+      localStorage.setItem('orders', JSON.stringify(orders));
+      alert('Ordem de serviço cadastrada com sucesso!');
+      document.getElementById('orderForm').reset();
+    });
+  </script>
+
+</body>
+</html>

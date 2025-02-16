@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Ordens de Serviço</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* Resetando o estilo padrão do navegador */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Estilo geral do corpo da página */
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      background-color: #f7f8fa;
+      color: #333;
+      padding: 20px;
+    }
+
+    /* Cabeçalho */
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 35px;
+      text-align: center;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+
+    /* Navegação */
+    nav {
+      margin-top: 20px;
+      text-align: center;
+      background-color: #333;
+      padding: 10px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-link {
+      display: inline-block;
+      margin: 0 15px;
+      font-size: 18px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-weight: 500;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    /* Conteúdo principal */
+    .main-content {
+      background-color: #ffffff;
+      padding: 30px;
+      margin-top: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-section h2 {
+      color: #007bff;
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .info-section p {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    strong {
+      color: #d9534f;
+    }
+
+    /* Botão para Resetar */
+    .reset-button {
+      display: inline-block;
+      background-color: #d9534f;
+      color: white;
+      padding: 14px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .reset-button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .reset-button:hover:enabled {
+      background-color: #c9302c;
+      transform: scale(1.05);
+    }
+
+    /* Rodapé */
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1rem;
+      color: #666;
+    }
+
+    /* Responsividade */
+    @media screen and (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .nav-link {
+        margin: 5px;
+        font-size: 16px;
+      }
+
+      .reset-button {
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .info-section p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Gestão de Ordens de Serviço</h1>
+  </header>
+
+  <nav>
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="cadastro.html" class="nav-link">Cadastro</a>
+    <a href="relatorios.html" class="nav-link">Relatórios</a>
+    <a href="pesquisa.html" class="nav-link">Pesquisa</a>
+  </nav>
+
+  <main class="main-content">
+    <section class="info-section">
+      <h2>Resetar o Cadastro</h2>
+      <p>Ao clicar no botão abaixo, todas as ordens de serviço serão apagadas permanentemente do sistema. Isso inclui todos os dados cadastrados e não pode ser desfeito.</p>
+      <p><strong>Por favor, tenha certeza de que deseja realizar essa ação.</strong></p>
+    </section>
+
+    <section class="action-section">
+      <button id="resetButton" onclick="resetLocalStorage()" class="reset-button">Resetar Cadastro</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados</p>
+  </footer>
+
+  <script>
+    function resetLocalStorage() {
+      const confirmation = confirm("Tem certeza que deseja resetar as ordens de serviço? Isso apagará todos os dados!");
+      
+      if (confirmation) {
+        const doubleCheck = prompt("Digite 'RESET' para confirmar:");
+
+        if (doubleCheck === 'RESET') {
+          localStorage.clear();
+          alert("Cadastro resetado com sucesso!");
+
+          const resetButton = document.getElementById("resetButton");
+          resetButton.disabled = true;
+          resetButton.innerText = "Cadastro Resetado";
+        } else {
+          alert("Confirmação incorreta. Cadastro não foi resetado.");
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

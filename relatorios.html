@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatórios de Ordens de Serviço</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20;
+      padding: 200;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #0044cc;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav {
+      background-color: #333;
+      overflow: hidden;
+      padding: 10px;
+      display:flex;
+      flex-direction;
+      justify-content: space-around;
+    }
+
+    nav a {
+      color: white;
+      padding: 14px 10px;
+      text-decoration: none;
+      display:inline-block;
+    }
+
+    nav a:hover {
+      background-color: #575757;
+    }
+
+    .main-content {
+      padding: 20px;
+    }
+
+    h2, h3 {
+      color: #333;
+    }
+
+    select, button {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #0044cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0033aa;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    #report {
+      margin-top: 20px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Relatórios de Ordens de Serviço</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cadastro.html">Cadastro</a>
+    <a href="relatorios.html">Relatórios</a>
+    <a href="pesquisa.html">Pesquisa</a>
+  </nav>
+
+  <div class="main-content">
+    <h2>Gerar Relatório</h2>
+
+    <label for="yearSelect">Selecione o ano:</label>
+    <select id="yearSelect">
+      <!-- Os anos serão preenchidos dinamicamente -->
+    </select>
+
+    <label for="monthSelect">Selecione o mês:</label>
+    <select id="monthSelect">
+      <option value="01">Janeiro</option>
+      <option value="02">Fevereiro</option>
+      <option value="03">Março</option>
+      <option value="04">Abril</option>
+      <option value="05">Maio</option>
+      <option value="06">Junho</option>
+      <option value="07">Julho</option>
+      <option value="08">Agosto</option>
+      <option value="09">Setembro</option>
+      <option value="10">Outubro</option>
+      <option value="11">Novembro</option>
+      <option value="12">Dezembro</option>
+    </select>
+
+    <button onclick="generateReport()">Gerar Relatório</button>
+    <button onclick="saveAsPDF()">Salvar em PDF</button>
+
+    <h3>Relatório de Ordens de Serviço</h3>
+
+    <div id="report">
+      <!-- Relatório será exibido aqui -->
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados</p>
+  </footer>
+
+  <script>
+    function populateYearSelect() {
+      const yearSelect = document.getElementById("yearSelect");
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const years = new Set();
+
+      orders.forEach(order => {
+        const year = new Date(order.serviceDate).getFullYear();
+        years.add(year);
+      });
+
+      years.forEach(year => {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      });
+    }
+
+    function generateReport() {
+      const year = document.getElementById("yearSelect").value;
+      const month = document.getElementById("monthSelect").value;
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+      const filteredOrders = orders.filter(order => {
+        const orderYear = new Date(order.serviceDate).getFullYear();
+        const orderMonth = new Date(order.serviceDate).getMonth() + 1;
+        return orderYear === parseInt(year) && orderMonth === parseInt(month);
+      });
+
+      if (filteredOrders.length === 0) {
+        document.getElementById("report").innerHTML = "<p>Nenhuma ordem de serviço encontrada para este ano e mês.</p>";
+        return;
+      }
+
+      let reportHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th>O.S</th>
+              <th>Data</th>
+              <th>Tipo de Serviço</th>
+              <th>Comissão (R$)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let totalCommission = 0;
+      filteredOrders.forEach(order => {
+        let commission = 0;
+        if (order.serviceType === "Instalação" || order.serviceType === "Manutenção") {
+          commission = 20;
+        }
+        totalCommission += commission;
+
+        reportHtml += `
+          <tr>
+            <td>${order.osNumber}</td>
+            <td>${new Date(order.serviceDate).toLocaleDateString('pt-BR')}</td>
+            <td>${order.serviceType}</td>
+            <td>${commission}</td>
+          </tr>
+        `;
+      });
+
+      reportHtml += `
+          </tbody>
+        </table>
+        <p><strong>Total de Comissão (R$):</strong> R$ ${totalCommission}</p>
+      `;
+
+      document.getElementById("report").innerHTML = reportHtml;
+    }
+
+    function saveAsPDF() {
+      const year = document.getElementById("yearSelect").value;
+      const month = document.getElementById("monthSelect").value;
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const filteredOrders = orders.filter(order => {
+        const orderYear = new Date(order.serviceDate).getFullYear();
+        const orderMonth = new Date(order.serviceDate).getMonth() + 1;
+        return orderYear === parseInt(year) && orderMonth === parseInt(month);
+      });
+
+      if (filteredOrders.length === 0) {
+        alert("Nenhuma ordem de serviço encontrada para este ano e mês.");
+        return;
+      }
+
+      let totalCommission = 0;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Definindo título e formato
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text(`Relatório Completo de Ordens de Serviço`, 14, 20);
+
+      // Definindo subtítulo
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text(`Ano: ${year} | Mês: ${month}`, 14, 30);
+
+      // Adicionando a tabela
+      doc.autoTable({
+        head: [['O.S', 'Data', 'Tipo de Serviço', 'Comissão (R$)']],
+        body: filteredOrders.map(order => {
+          let commission = 0;
+          if (order.serviceType === "Instalação" || order.serviceType === "Manutenção") {
+            commission = 20;
+          }
+          totalCommission += commission;
+          return [order.osNumber, new Date(order.serviceDate).toLocaleDateString('pt-BR'), order.serviceType, commission];
+        }),
+        startY: 40,
+        theme: 'striped',
+      });
+
+      // Adicionando o total de comissão
+      doc.setFont("helvetica", "bold");
+      doc.text(`Total de Comissão (R$): R$ ${totalCommission}`, 14, doc.lastAutoTable.finalY + 10);
+
+      // Salvando o PDF
+      doc.save(`Relatorio_Completo_${year}_${month}.pdf`);
+    }
+
+    window.onload = populateYearSelect;
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesquisa de Ordens de Serviço</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20;
+      padding: 20;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #0044cc;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav {
+      background-color: #333;
+      overflow: hidden;
+    }
+
+    nav a {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    nav a:hover {
+      background-color: #575757;
+    }
+
+    h2 {
+      color: #333;
+      padding: 20px;
+    }
+
+    label {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 0px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #0044cc;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    td {
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover td {
+      background-color: #f1f1f1;
+    }
+
+    td:hover {
+      background-color: #f0f0f0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Pesquisa de Ordens de Serviço</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cadastro.html">Cadastro</a>
+    <a href="relatorios.html">Relatórios</a>
+    <a href="pesquisa.html">Pesquisa</a>
+  </nav>
+
+  <h2>Pesquisa de Ordens de Serviço</h2>
+  
+  <label for="searchInput">Pesquise por O.S. ou Placa:</label>
+  <input type="text" id="searchInput" placeholder="Digite O.S. ou Placa" oninput="searchOrders()">
+  
+  <table id="ordersTable">
+    <thead>
+      <tr>
+        <th>O.S</th>
+        <th>Placa</th>
+        <th>Data</th>
+        <th>Tipo de Serviço</th>
+      </tr>
+    </thead>
+    <tbody id="ordersTableBody">
+      <!-- As ordens de serviço serão exibidas aqui -->
+    </tbody>
+  </table>
+
+  <div id="noResults" class="no-results" style="display: none;">Nenhuma ordem de serviço encontrada.</div>
+
+  <script>
+    function searchOrders() {
+      const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
+      
+      // Se a pesquisa estiver vazia, não faz nada
+      if (searchQuery.length === 0) {
+        document.getElementById('ordersTableBody').innerHTML = ''; // Limpa a tabela se não houver pesquisa
+        document.getElementById('noResults').style.display = 'none'; // Oculta a mensagem de "nenhum resultado"
+        return;
+      }
+
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const tableBody = document.getElementById('ordersTableBody');
+      const noResults = document.getElementById('noResults');
+
+      // Limpa o conteúdo da tabela antes de mostrar os resultados da pesquisa
+      tableBody.innerHTML = '';
+
+      // Filtra as ordens de serviço conforme a pesquisa (por O.S. ou Placa)
+      const filteredOrders = orders.filter(order => {
+        return order.osNumber.toLowerCase().includes(searchQuery) || order.plate.toLowerCase().includes(searchQuery);
+      });
+
+      // Exibe a mensagem de "nenhum resultado" caso não encontre ordens
+      if (filteredOrders.length === 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+
+      // Exibe as ordens filtradas na tabela
+      filteredOrders.forEach(order => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${order.osNumber}</td>
+          <td>${order.plate}</td>
+          <td>${order.serviceDate}</td>
+          <td>${order.serviceType}</td>
+        `;
+        row.addEventListener('click', () => {
+          // Exibe a observação ao clicar na linha da ordem de serviço
+          alert(`Observação: ${order.observation}`);
+        });
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Chama a função de pesquisa automaticamente para preencher a tabela na inicialização
+    window.onload = function() {
+      searchOrders(); // Preenche a tabela com todas as ordens de serviço inicialmente
+    }
+  </script>
+
+  <footer>
+    <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados</p>
+  </footer>
+
+</body>
+</html>
