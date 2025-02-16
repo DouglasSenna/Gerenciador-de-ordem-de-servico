@@ -4,99 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Relatórios de Ordens de Serviço</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script> 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20;
-      padding: 20;
-      background-color: #f4f4f4;
-    }
-
-    header {
-      background-color: #0044cc;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
-
-    nav {
-      background-color: #333;
-      overflow: hidden;
-      padding: 10px;
-      display: flex;
-      justify-content: space-around;
-    }
-
-    nav a {
-      color: white;
-      padding: 14px 10px;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    nav a:hover {
-      background-color: #575757;
-    }
-
-    .main-content {
-      padding: 20px;
-    }
-
-    h2, h3 {
-      color: #333;
-    }
-
-    select, button {
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background-color: #0044cc;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0033aa;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f2f2f2;
-    }
-
-    tr {
-      cursor: pointer;
-    }
-
-    #report {
-      margin-top: 20px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 10px;
-      background-color: #333;
-      color: white;
-    }
-  </style>
+  
 </head>
 <body>
 
@@ -146,9 +58,11 @@
   </div>
 
   <footer>
-    <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados</p>
+    <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados | Vulgo: Macarrão</p>
+    <a href="https://wa.me/+5585996876246" target="_blank">
+  Fale Conosco no WhatsApp
+</a>
   </footer>
-
   <script>
     function populateYearSelect() {
       const yearSelect = document.getElementById("yearSelect");
@@ -229,7 +143,7 @@
         totalCommission += commission;
 
         reportHtml += `
-          <tr onclick="showObservation('${order.observation}')">
+          <tr onclick="showObservation('${order.osNumber}', '${order.serviceType}', '${order.serviceDate}', '${order.lockType}', '${order.model}')">
             <td>${order.osNumber}</td>
             <td>${new Date(order.serviceDate).toLocaleDateString('pt-BR')}</td>
             <td>${order.serviceType}</td>
@@ -248,8 +162,20 @@
       document.getElementById("report").innerHTML = reportHtml;
     }
 
-    function showObservation(observation) {
-      alert("Observação do Serviço: " + observation);
+    function showObservation(osNumber, serviceType, serviceDate, blockType, model) {
+      const formattedDate = new Date(serviceDate).toLocaleDateString('pt-BR');
+      
+      // Adiciona uma verificação para o 'lockType'
+      const blockInfo = blockType || "Não especificado"; // Se blockType for undefined ou vazio, usa "Não especificado"
+      
+      const message = `
+        O.S: ${osNumber}
+        Tipo de Serviço: ${serviceType}
+        Data: ${formattedDate}
+        Tipo de Bloqueio: ${blockInfo}
+        Modelo: ${model}
+      `;
+      alert(message);
     }
 
     function saveAsPDF() {
@@ -280,16 +206,12 @@
 
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.text(`Relatório Completo de Ordens de Serviço`, 14, 20);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.text(`Ano: ${year} | Mês: ${month}`, 14, 30);
-
+      
+      doc.text("Relatório de Ordens de Serviço", 14, 10);
+      doc.text(`Ano: ${year} - Mês: ${month}`, 14, 20);
+      
       doc.autoTable({
+        startY: 30,
         head: [['O.S', 'Data', 'Tipo de Serviço', 'Comissão (R$)']],
         body: filteredOrders.map(order => {
           let commission = 0;
@@ -306,25 +228,25 @@
               commission = 20;
               serviceCounts["Manutenção/Reinstalação"]++;
               break;
-            default:
-              commission = 0;
           }
           totalCommission += commission;
-          return [order.osNumber, new Date(order.serviceDate).toLocaleDateString('pt-BR'), order.serviceType, commission];
-        }),
-        startY: 40,
-        theme: 'striped',
+          return [
+            order.osNumber,
+            new Date(order.serviceDate).toLocaleDateString('pt-BR'),
+            order.serviceType,  // Corrigido de order.serviceCounts para order.serviceType
+            commission
+          ];
+        })
       });
 
-      doc.setFont("helvetica", "bold");
-      doc.text(`Total de Comissão (R$): R$ ${totalCommission}`, 14, doc.lastAutoTable.finalY + 10);
+      doc.text(`Total de Comissão (R$): ${totalCommission}`, 14, doc.lastAutoTable.finalY + 10);
       doc.text(`Instalação: ${serviceCounts["Instalação"]} | Manutenção: ${serviceCounts["Manutenção"]} | Manutenção/Reinstalação: ${serviceCounts["Manutenção/Reinstalação"]}`, 14, doc.lastAutoTable.finalY + 20);
 
-      doc.save(`Relatorio_Completo_${year}_${month}.pdf`);
+      doc.save('relatorio_ordens_servico.pdf');
     }
 
+    // Chama populateYearSelect ao carregar a página para preencher os anos
     window.onload = populateYearSelect;
   </script>
-
 </body>
 </html>
