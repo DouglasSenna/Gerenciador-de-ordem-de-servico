@@ -6,13 +6,15 @@
   <title>Pesquisa de Ordens de Serviço</title>
   <link rel="stylesheet" href="styles.css">
   <style>
+    /* Estilos gerais do corpo da página */
     body {
       font-family: Arial, sans-serif;
-      margin: 20;
-      padding: 20;
+      margin: 0;
+      padding: 0;
       background-color: #f4f4f4;
     }
 
+    /* Estilos para o cabeçalho */
     header {
       background-color: #0044cc;
       color: white;
@@ -20,11 +22,13 @@
       text-align: center;
     }
 
+    /* Estilos para o menu de navegação */
     nav {
       background-color: #333;
       overflow: hidden;
     }
 
+    /* Estilos para os links do menu */
     nav a {
       color: white;
       padding: 14px 20px;
@@ -32,20 +36,24 @@
       display: inline-block;
     }
 
+    /* Efeito hover para os links do menu */
     nav a:hover {
       background-color: #575757;
     }
 
+    /* Estilos para o título da seção de pesquisa */
     h2 {
       color: #333;
       padding: 20px;
     }
 
+    /* Estilos para o rótulo do campo de pesquisa */
     label {
       font-size: 16px;
       margin-right: 10px;
     }
 
+    /* Estilos para o campo de pesquisa */
     input[type="text"] {
       padding: 10px;
       width: 300px;
@@ -54,15 +62,17 @@
       border: 1px solid #ccc;
     }
 
+    /* Estilos para a tabela que exibe as ordens de serviço */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      border-radius: 0px;
+      border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
+    /* Estilos para os cabeçalhos da tabela */
     th, td {
       padding: 12px;
       text-align: left;
@@ -80,10 +90,12 @@
       cursor: pointer;
     }
 
+    /* Estilo para as linhas alternadas da tabela */
     tr:nth-child(even) td {
       background-color: #f9f9f9;
     }
 
+    /* Efeito hover nas células da tabela */
     tr:hover td {
       background-color: #f1f1f1;
     }
@@ -92,6 +104,7 @@
       background-color: #f0f0f0;
     }
 
+    /* Estilos para o rodapé */
     footer {
       text-align: center;
       padding: 10px;
@@ -99,20 +112,29 @@
       color: white;
     }
 
+    /* Estilos para a mensagem de "nenhum resultado" */
     .no-results {
       text-align: center;
       color: #999;
       font-style: italic;
       padding: 20px;
     }
+
+    /* Estilo para bloquear a interação com a tabela */
+    .blocked {
+      pointer-events: none;
+      opacity: 0.5;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Cabeçalho da página -->
   <header>
     <h1>Pesquisa de Ordens de Serviço</h1>
   </header>
 
+  <!-- Menu de navegação -->
   <nav>
     <a href="index.html">Home</a>
     <a href="cadastro.html">Cadastro</a>
@@ -120,11 +142,14 @@
     <a href="pesquisa.html">Pesquisa</a>
   </nav>
 
+  <!-- Título da seção de pesquisa -->
   <h2>Pesquisa de Ordens de Serviço</h2>
   
+  <!-- Campo de pesquisa para O.S. ou Placa -->
   <label for="searchInput">Pesquise por O.S. ou Placa:</label>
   <input type="text" id="searchInput" placeholder="Digite O.S. ou Placa" oninput="searchOrders()">
   
+  <!-- Tabela para exibir as ordens de serviço -->
   <table id="ordersTable">
     <thead>
       <tr>
@@ -135,28 +160,31 @@
       </tr>
     </thead>
     <tbody id="ordersTableBody">
-      <!-- As ordens de serviço serão exibidas aqui -->
+      <!-- As ordens de serviço serão exibidas aqui dinamicamente -->
     </tbody>
   </table>
 
+  <!-- Mensagem de "nenhum resultado" -->
   <div id="noResults" class="no-results" style="display: none;">Nenhuma ordem de serviço encontrada.</div>
 
   <script>
+    // Função que realiza a pesquisa de ordens de serviço
     function searchOrders() {
       const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
       
-      // Se a pesquisa estiver vazia, não faz nada
+      // Se a pesquisa estiver vazia, limpa a tabela e oculta a mensagem
       if (searchQuery.length === 0) {
-        document.getElementById('ordersTableBody').innerHTML = ''; // Limpa a tabela se não houver pesquisa
+        document.getElementById('ordersTableBody').innerHTML = ''; // Limpa a tabela
         document.getElementById('noResults').style.display = 'none'; // Oculta a mensagem de "nenhum resultado"
         return;
       }
 
+      // Recupera as ordens de serviço armazenadas no localStorage
       const orders = JSON.parse(localStorage.getItem('orders')) || [];
       const tableBody = document.getElementById('ordersTableBody');
       const noResults = document.getElementById('noResults');
 
-      // Limpa o conteúdo da tabela antes de mostrar os resultados da pesquisa
+      // Limpa o conteúdo da tabela antes de exibir os resultados
       tableBody.innerHTML = '';
 
       // Filtra as ordens de serviço conforme a pesquisa (por O.S. ou Placa)
@@ -180,20 +208,29 @@
           <td>${order.serviceDate}</td>
           <td>${order.serviceType}</td>
         `;
+        
+        // Adiciona um evento de clique para mostrar as informações detalhadas da ordem de serviço
         row.addEventListener('click', () => {
-          // Exibe a observação ao clicar na linha da ordem de serviço
-          alert(`Observação: ${order.observation}`);
+          // Bloqueia a interação com a tabela enquanto o alerta é exibido
+          document.getElementById('ordersTable').classList.add('blocked');
+          
+          // Exibe um alerta com as informações detalhadas da ordem de serviço
+          alert(`O.S: ${order.osNumber}\nPlaca: ${order.plate}\nData: ${order.serviceDate}\nTipo de Serviço: ${order.serviceType}\nObservação: ${order.observation}`);
+
+          // Libera a interação com a tabela após o alerta
+          document.getElementById('ordersTable').classList.remove('blocked');
         });
         tableBody.appendChild(row);
       });
     }
 
-    // Chama a função de pesquisa automaticamente para preencher a tabela na inicialização
+    // Função chamada automaticamente na inicialização para preencher a tabela
     window.onload = function() {
       searchOrders(); // Preenche a tabela com todas as ordens de serviço inicialmente
     }
   </script>
 
+  <!-- Rodapé da página -->
   <footer>
     <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados</p>
   </footer>
