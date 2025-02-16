@@ -1,0 +1,292 @@
+:root {
+  --primary-color: #0044cc;
+  --secondary-color: #333;
+  --accent-color: #28a745;
+  --light-color: #f4f4f4;
+  --dark-color: #222;
+  --font-family: 'Arial', sans-serif;
+  --border-radius: 12px;
+  --max-width: 1200px;
+  --box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  --transition-speed: 0.3s;
+  --gradient-primary: linear-gradient(135deg, #0044cc, #0066ff);
+  --gradient-accent: linear-gradient(135deg, #28a745, #34d058);
+  --texture-light: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZmZjtzdG9wLW9wYWNpdHk6MC4xIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmO3N0b3Atb3BhY2l0eTowLjEiLz48L2xpbmVhckdyYWRpZW50PjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZykiIG9wYWNpdHk9IjAuMiIvPjwvc3ZnPg==');
+}
+
+/* Estilo Global */
+body {
+  font-family: var(--font-family);
+  background-color: var(--light-color);
+  color: var(--dark-color);
+  margin: 0;
+  padding: 10px;
+  line-height: 1.6;
+  box-sizing: border-box;
+  background-image: var(--texture-light);
+  background-blend-mode: overlay;
+}
+
+/* Contêiner Responsivo */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Cabeçalho e Navegação */
+header {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 20px 40px;
+  text-align: center;
+  border-radius: 10px 10px 0px 0px;
+  box-shadow: var(--box-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Menu de Navegação */
+nav {
+  background-color: var(--secondary-color);
+  display: flex;
+  flex-direction:row;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 0px 0px 10px 10px;
+  box-shadow: var(--box-shadow);
+  flex-wrap: wrap;
+  transition: transform var(--transition-speed);
+}
+
+nav a {
+  color: white;
+  padding: 12px 20px;
+  text-decoration: none;
+  margin: 10px;
+  transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+  border-radius: var(--border-radius);
+  text-align: center;
+  display: block;
+  flex-grow: 1;
+  background: rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+nav a::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform var(--transition-speed);
+  border-radius: 50%;
+}
+
+nav a:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+nav a:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+nav a:focus {
+  outline: 2px solid var(--primary-color);
+}
+
+/* Botões e Formulários */
+button {
+  background: var(--gradient-accent);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: var(--box-shadow);
+}
+
+button:hover {
+  background: linear-gradient(135deg, #218838, #28a745);
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+button:focus {
+  outline: 2px solid var(--accent-color);
+}
+
+/* Campos de entrada */
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  box-sizing: border-box;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(0, 68, 204, 0.4);
+  outline: none;
+}
+
+/* Tabelas e Conteúdo */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  background: white;
+}
+
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+th {
+  background: var(--gradient-primary);
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+tr:nth-child(even) td {
+  background-color: var(--light-color);
+}
+
+tr:hover td {
+  background-color: #f1f1f1;
+}
+
+/* Rodapé */
+footer {
+  text-align: center;
+  padding: 20px;
+  background: var(--gradient-primary);
+  color: white;
+  margin-top: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+footer a{
+    color:white;
+    background-color: #668EE0;
+    padding:10px;
+    border-radius:10px;
+    border:solid black;
+    text-decoration:none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Ícone do WhatsApp */
+.whatsapp-link {
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 10px;
+  background-color: var(--accent-color);
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.whatsapp-link i {
+  margin-right: 8px;
+}
+
+.whatsapp-link:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+  box-shadow: var(--box-shadow);
+}
+
+.whatsapp-link:focus {
+  outline: 2px solid var(--accent-color);
+}
+
+/* Responsividade */
+@media screen and (max-width: 1200px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  nav a {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  header h1 {
+    font-size: 2rem;
+  }
+
+  nav {
+    align-items: center;
+  }
+
+  nav a {
+    font-size: 16px;
+    margin: 5px 0;
+    padding: 10px 15px;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  table, th, td {
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  nav a {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  table, th, td {
+    font-size: 0.8rem;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
+
