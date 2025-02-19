@@ -7,6 +7,28 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    /* Estilo para o mural de updates */
+    .update-board {
+      background-color: #f1f1f1;
+      border-left: 5px solid #4caf50;
+      padding: 15px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .update-board h3 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .update-board ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+    .update-board ul li {
+      margin-bottom: 5px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
 
@@ -22,6 +44,17 @@
   </nav>
 
   <main class="main-content">
+    
+    <!-- Mural de Updates -->
+    <section class="update-board">
+      <h3>Últimas Atualizações</h3>
+      <ul>
+        <li><strong>18/02/2025:</strong> Implementada a funcionalidade de edição de ordens de serviço sem perder dados salvos.</li>
+        <li><strong>18/02/2025:</strong> Ajustado o alerta para continuar funcionando ao clicar na O.S., mesmo com o novo botão de editar.</li>
+        <li><strong>18/02/2025:</strong> Correções de bugs e melhorias de desempenho na pesquisa de ordens de serviço.</li>
+      </ul>
+    </section>
+
     <section class="info-section">
       <h2>Resetar o Cadastro</h2>
       <p>Ao clicar no botão abaixo, todas as ordens de serviço serão apagadas permanentemente do sistema. Isso inclui todos os dados cadastrados e não pode ser desfeito.</p>
@@ -37,8 +70,8 @@
   <footer>
     <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados | Vulgo: Macarrão</p>
     <a href="https://wa.me/+5585996876246" target="_blank">
-  Fale Conosco no WhatsApp
-</a>
+      Fale Conosco no WhatsApp
+    </a>
   </footer>
 
   <script>
