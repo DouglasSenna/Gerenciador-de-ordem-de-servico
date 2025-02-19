@@ -6,7 +6,6 @@
   <title>Pesquisa de Ordens de Serviço</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  
 </head>
 <body>
 
@@ -38,6 +37,7 @@
         <th>Placa</th>
         <th>Data</th>
         <th>Tipo de Serviço</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody id="ordersTableBody">
@@ -48,6 +48,31 @@
   <!-- Mensagem de "nenhum resultado" -->
   <div id="noResults" class="no-results" style="display: none;">Nenhuma ordem de serviço encontrada.</div>
 
+  <!-- Formulário de Edição (oculto por padrão) -->
+  <div id="editForm" style="display: none; margin-top: 20px;">
+    <h3>Editar Ordem de Serviço</h3>
+    <input type="hidden" id="editIndex">
+    <label for="editOsNumber">O.S:</label>
+    <input type="text" id="editOsNumber" readonly><br>
+    <label for="editPlate">Placa:</label>
+    <input type="text" id="editPlate"><br>
+    <label for="editServiceDate">Data:</label>
+    <input type="date" id="editServiceDate"><br>
+    <label for="serviceType">Tipo de Serviço:</label>
+    <select id="serviceType">
+      <option value="Instalação">Instalação</option>
+      <option value="Manutenção">Manutenção</option>
+      <option value="Manutenção/Reinstalação">Manutenção/Reinstalação</option>
+      <option value="Retirada">Retirada</option>
+      <option value="Frustrado">Frustrado</option>
+    </select><br>
+    <label for="editObservation">Observação:</label>
+    <input type="text" id="editObservation"><br>
+    <button onclick="saveEdit()">Salvar</button>
+    <button onclick="cancelEdit()">Cancelar</button>
+  </div>
+
+  <!-- Script JS -->
   <script>
     // Função que realiza a pesquisa de ordens de serviço
     function searchOrders() {
@@ -55,8 +80,8 @@
       
       // Se a pesquisa estiver vazia, limpa a tabela e oculta a mensagem
       if (searchQuery.length === 0) {
-        document.getElementById('ordersTableBody').innerHTML = ''; // Limpa a tabela
-        document.getElementById('noResults').style.display = 'none'; // Oculta a mensagem de "nenhum resultado"
+        document.getElementById('ordersTableBody').innerHTML = ''; 
+        document.getElementById('noResults').style.display = 'none';
         return;
       }
 
@@ -74,49 +99,87 @@
       });
 
       // Exibe a mensagem de "nenhum resultado" caso não encontre ordens
-      if (filteredOrders.length === 0) {
-        noResults.style.display = 'block';
-      } else {
-        noResults.style.display = 'none';
-      }
+      noResults.style.display = filteredOrders.length === 0 ? 'block' : 'none';
 
       // Exibe as ordens filtradas na tabela
-      filteredOrders.forEach(order => {
+      filteredOrders.forEach((order, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${order.osNumber}</td>
           <td>${order.plate}</td>
           <td>${order.serviceDate}</td>
           <td>${order.serviceType}</td>
+          <td>
+            <button onclick="openEditForm(${index})">Editar</button>
+          </td>
         `;
         
-        // Adiciona um evento de clique para mostrar as informações detalhadas da ordem de serviço
+        // Mantém o evento de clique para mostrar o alerta com os detalhes
         row.addEventListener('click', () => {
-          // Bloqueia a interação com a tabela enquanto o alerta é exibido
-          document.getElementById('ordersTable').classList.add('blocked');
-          
-          // Exibe um alerta com as informações detalhadas da ordem de serviço
           alert(`O.S: ${order.osNumber}\nPlaca: ${order.plate}\nData: ${order.serviceDate}\nTipo de Serviço: ${order.serviceType}\nObservação: ${order.observation}`);
-
-          // Libera a interação com a tabela após o alerta
-          document.getElementById('ordersTable').classList.remove('blocked');
         });
+
+        // Previne o clique no botão de abrir o formulário de disparar o alerta
+        row.querySelector('button').addEventListener('click', (event) => {
+          event.stopPropagation();
+        });
+        
         tableBody.appendChild(row);
       });
     }
 
-    // Função chamada automaticamente na inicialização para preencher a tabela
+    // Função para abrir o formulário de edição
+    function openEditForm(index) {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const order = orders[index];
+      
+      // Preenche o formulário com os dados da O.S. selecionada
+      document.getElementById('editIndex').value = index;
+      document.getElementById('editOsNumber').value = order.osNumber;
+      document.getElementById('editPlate').value = order.plate;
+      document.getElementById('editServiceDate').value = order.serviceDate;
+      document.getElementById('serviceType').value = order.serviceType;
+      document.getElementById('editObservation').value = order.observation;
+      
+      // Exibe o formulário de edição
+      document.getElementById('editForm').style.display = 'block';
+    }
+
+    // Função para salvar as alterações
+    function saveEdit() {
+      const index = document.getElementById('editIndex').value;
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      
+      // Atualiza os valores editados
+      orders[index].plate = document.getElementById('editPlate').value;
+      orders[index].serviceDate = document.getElementById('editServiceDate').value;
+      orders[index].serviceType = document.getElementById('serviceType').value;
+      orders[index].observation = document.getElementById('editObservation').value;
+      
+      // Salva no localStorage
+      localStorage.setItem('orders', JSON.stringify(orders));
+      
+      // Oculta o formulário de edição
+      document.getElementById('editForm').style.display = 'none';
+      
+      // Recarrega a tabela
+      searchOrders();
+    }
+
+    // Função para cancelar a edição
+    function cancelEdit() {
+      document.getElementById('editForm').style.display = 'none';
+    }
+
+    // Inicializa a tabela ao carregar a página
     window.onload = function() {
-      searchOrders(); // Preenche a tabela com todas as ordens de serviço inicialmente
+      searchOrders();
     }
   </script>
 
   <!-- Rodapé da página -->
   <footer>
     <p>&copy; 2025 Gestão de Ordens de Serviço | Todos os direitos reservados | Vulgo: Macarrão</p>
-    <a href="https://wa.me/+5585996876246" target="_blank">
-  Fale Conosco no WhatsApp
-</a>
   </footer>
 
 </body>
